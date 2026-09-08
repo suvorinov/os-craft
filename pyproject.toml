@@ -1,0 +1,63 @@
+[project]
+name = "os-craft"
+version = "0.1.0"
+description = "Легковесные, надежные утилиты для взаимодействия Python-приложений с ОС"
+readme = "README.md"
+requires-python = ">=3.10" # Используем современные фичи (например, union types X | Y)
+license = {text = "MIT"}
+authors = [
+    {name = "Oleg Suvorinov", email = "suvorinovoleg@yandex.ru"}
+]
+keywords = ["os", "shutdown", "asyncio", "signals", "infrastructure"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
+
+# Пока зависимостей нет, мы используем только стандартную библиотеку.
+# Это наш принцип KISS: ноль внешних зависимостей для ядра.
+dependencies = []
+
+[project.optional-dependencies]
+# Если в будущем захотим добавить extras
+# dev = ["pytest", "pytest-asyncio"]
+
+[build-system]
+requires = ["hatchling"] # Hatchling - современный, быстрый и простой билдер, рекомендованный PyPA
+build-backend = "hatchling.build"
+
+# --- Настройки инструментов разработки ---
+
+[tool.ruff]
+line-length = 130 # Немного шире стандарта, удобно для типизации
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"] # Базовые ошибки, импорт, modern python, bugbear, simplify
+ignore = []
+
+[tool.mypy]
+python_version = "3.10"
+strict = true # Включаем максимальную строгость проверки типов
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto" # Автоматически определяем async тесты, чтобы не писать декораторы вручную
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "fastapi>=0.141.1",
+    "mypy>=2.3.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.6",
+    "uvicorn>=0.52.4",
+]
