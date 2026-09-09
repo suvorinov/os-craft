@@ -2,7 +2,7 @@
 
 ![Python Versions](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12%20|%203.13%20|%203.14-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-[![PyPI Version](https://img.shields.io/pypi/v/os-craft)](https://pypi.org/project/os-craft/)
+[![Version](https://img.shields.io/badge/version-0.1.2-blue)](https://pypi.org/project/os-craft/)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
 **RU:** Легковесные, надежные и типизированные утилиты для взаимодействия Python-приложений с операционной системой.  
@@ -442,27 +442,32 @@ uv build
 ## 🏗️ Project Structure / Структура проекта
 
     os-craft/
-    ├── pyproject.toml          # Конфигурация проекта, зависимостей и инструментов
-    ├── uv.lock                 # Lock-файл для воспроизводимых сборок
-    ├── README.md               # Этот файл
-    ├── LICENSE                 # MIT License
+    ├── .github/
+    │   └── workflows/
+    │       └── ci.yml           # CI: ruff, mypy strict, pytest (Python 3.10-3.12)
+    ├── pyproject.toml           # Конфигурация проекта, зависимостей и инструментов
+    ├── uv.lock                  # Lock-файл для воспроизводимых сборок
+    ├── README.md                # Этот файл
+    ├── LICENSE                  # MIT License
+    ├── .gitignore               # Исключения для git (вкл. editor swap-файлы)
+    ├── .python-version          # Версия Python для uv
     ├── src/
     │   └── os_craft/
-    │       ├── __init__.py     # Публичный API пакета
-    │       ├── shutdown.py     # ShutdownManager (graceful shutdown)
-    │       ├── config.py       # load_config (типизированная загрузка конфига)
-    │       └── py.typed        # Маркер для mypy (PEP 561)
+    │       ├── __init__.py      # Публичный API пакета (версия из metadata)
+    │       ├── shutdown.py      # ShutdownManager (graceful shutdown)
+    │       ├── config.py        # load_config + HotReloadConfig (конфигурация)
+    │       └── py.typed         # Маркер для mypy (PEP 561)
     ├── tests/
-    │   ├── test_shutdown.py    # Тесты для ShutdownManager
-    │   ├── test_config.py      # Тесты для load_config
-    │   └── test_hot_reload.py  # Тесты для HotReloadConfig
+    │   ├── test_shutdown.py     # Тесты для ShutdownManager
+    │   ├── test_config.py       # Тесты для load_config
+    │   └── test_hot_reload.py   # Тесты для HotReloadConfig
     └── examples/
         ├── fastapi_graceful_shutdown.py  # Пример интеграции с FastAPI
         ├── graceful_shutdown.py          # Пример graceful shutdown без FastAPI
-        ├── config_usage.py               # Пример использования load_config
-        ├── config.toml                   # Демо-конфигурация для config_usage
-        ├── hot_reload_usage.py           # Пример hot-reload конфигурации
-        └── hot_reload.toml               # Демо-конфигурация для hot_reload_usage
+        ├── config_usage.py               # Пример load_config
+        ├── config.toml                   # Демо-конфиг для config_usage
+        ├── hot_reload_usage.py           # Пример HotReloadConfig
+        └── hot_reload.toml               # Демо-конфиг для hot_reload_usage
 
 ## 🤝 Contributing / Участие в разработке
 
