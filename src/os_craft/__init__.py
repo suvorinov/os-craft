@@ -4,12 +4,16 @@ os-craft: Легковесные утилиты для взаимодейств�
 
 from importlib.metadata import PackageNotFoundError, version
 
+from .config import ConfigError, HotReloadConfig, load_config
 from .shutdown import ShutdownHook, ShutdownManager
 
 # Явно указываем, что экспортируется при `from os_craft import *`
 __all__ = [
     "ShutdownHook",
     "ShutdownManager",
+    "load_config",
+    "HotReloadConfig",
+    "ConfigError",
 ]
 
 
@@ -25,7 +29,7 @@ def _get_version() -> str:
     try:
         return version("os-craft")
     except PackageNotFoundError:
-        return "0.1.0"
+        return "0.1.2"
 
 
 __version__ = _get_version()

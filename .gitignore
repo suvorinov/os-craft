@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Editor swap/backup files
+*.swp
+*.swo
+*~

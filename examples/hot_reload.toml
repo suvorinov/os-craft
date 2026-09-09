@@ -1,0 +1,8 @@
+# examples/hot_reload.toml
+# Демо-конфигурация для примера hot_reload_usage.py.
+# Примечание: используйте ОТДЕЛЬНЫЙ файл от examples/config.toml —
+# у config_usage.py другая схема полей.
+
+app_name = "MyAwesomeApp"
+max_workers = 4
+feature_flag_new_ui = false
