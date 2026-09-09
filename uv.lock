@@ -392,7 +392,7 @@ wheels = [
 
 [[package]]
 name = "os-craft"
-version = "0.1.2"
+version = "0.1.4"
 source = { editable = "." }
 dependencies = [
     { name = "tomli", marker = "python_full_version < '3.11'" },

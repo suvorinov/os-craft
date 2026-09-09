@@ -1,6 +1,6 @@
 [project]
 name = "os-craft"
-version = "0.1.2"
+version = "0.1.4"
 description = "Легковесные, надежные утилиты для взаимодействия Python-приложений с ОС"
 readme = "README.md"
 requires-python = ">=3.10" # Используем современные фичи (например, union types X | Y)
