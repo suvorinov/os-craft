@@ -2,7 +2,7 @@
 
 ![Python Versions](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12%20|%203.13%20|%203.14-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![PyPI Status](https://img.shields.io/badge/pypi-coming_soon-orange)
+[![PyPI Version](https://img.shields.io/pypi/v/os-craft)](https://pypi.org/project/os-craft/)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
 **RU:** Легковесные, надежные и типизированные утилиты для взаимодействия Python-приложений с операционной системой.  
