@@ -17,16 +17,14 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
 
 # Пока зависимостей нет, мы используем только стандартную библиотеку.
 # Это наш принцип KISS: ноль внешних зависимостей для ядра.
 dependencies = []
-
-[project.optional-dependencies]
-# Если в будущем захотим добавить extras
-# dev = ["pytest", "pytest-asyncio"]
 
 [build-system]
 requires = ["hatchling"] # Hatchling - современный, быстрый и простой билдер, рекомендованный PyPA

@@ -19,11 +19,10 @@
 
 import asyncio
 import logging
-import signal
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
 import uvicorn
+from fastapi import FastAPI
 
 # Импортируем наш менеджер. В реальном проекте это будет: from os_craft import ShutdownManager
 # import sys
@@ -114,17 +113,17 @@ async def lifespan(app: FastAPI):
     
     shutdown_manager.add_hook(cancel_worker)
 
-    # 3. Подписка на сигналы ОС (SIGTERM, SIGINT)
-    # Мы делаем это здесь, потому что event loop уже запущен FastAPI
-    loop = asyncio.get_running_loop()
-    shutdown_manager.attach_to_signals(loop)
+    # 3. Подписка на сигналы НЕ требуется: uvicorn сам перехватывает
+    # SIGINT/SIGTERM и корректно запускает teardown lifespan, где мы
+    # выполняем хуки через shutdown_manager._execute_hooks().
+    # Это исключает конфликт двух обработчиков сигналов и двойное выполнение хуков.
 
     logger.info("🚀 Приложение полностью готово к работе!")
 
     yield # Здесь управление передается FastAPI/Uvicorn
 
-    # Этот блок выполнится после yield, но мы делегируем реальную очистку 
-    # нашему shutdown_manager, чтобы централизовать логику и таймауты.
+    # Реальная очистка делегируется shutdown_manager, чтобы централизовать
+    # логику и таймауты. Вызывается один раз — при завершении lifespan.
     logger.info("🔄 Завершение работы приложения через lifespan...")
     await shutdown_manager._execute_hooks()
 

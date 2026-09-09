@@ -35,6 +35,7 @@ ShutdownManager из os-craft перехватывает эти сигналы �
 ```python
 import asyncio
 import logging
+import sys
 from os_craft import ShutdownManager
 
 logging.basicConfig(level=logging.INFO)
@@ -62,20 +63,25 @@ async def main():
     manager.add_hook(stop_background_worker)
     
     # 3. Подписываемся на сигналы ОС (SIGINT, SIGTERM)
-    loop = asyncio.get_running_loop()
-    manager.attach_to_signals(loop)
+    # Активный event loop определяется внутри автоматически.
+    manager.attach_to_signals()
     
     logger.info("Приложение запущено. Нажмите Ctrl+C для корректного завершения.")
     
-    # Имитация долгой работы приложения
+    # Имитация долгой работы приложения.
+    # При получении сигнала менеджер корректно отменит эту задачу.
     try:
         while True:
             await asyncio.sleep(1)
     except asyncio.CancelledError:
         pass  # Ожидаем, пока manager завершит все хуки
 
+    return manager
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Очистка завершена, получаем код выхода (0 - успех, 1 - ошибка в хуке)
+    manager = asyncio.run(main())
+    sys.exit(manager.exit_code)
 ```
 #### Что произойдет при нажатии Ctrl+C:
 
@@ -87,9 +93,19 @@ if __name__ == "__main__":
     6. INFO | Выполняем хук: close_database (доступно 4.50s)
     7. INFO | Закрываем соединения с БД...
     8. INFO | БД безопасно отключена.
-    9.INFO | Процесс graceful shutdown успешно завершен.
+    9. INFO | Процесс graceful shutdown успешно завершен.
 
-После этого процесс автоматически завершится с кодом выхода 0.
+После этого `asyncio.run(main())` корректно вернёт управление в `__main__`,
+и процесс завершится с кодом выхода 0. Если какой-либо хук упал или превысил
+таймаут — `manager.exit_code` будет равен 1, и оркестратор (Kubernetes, systemd)
+узнает о проблеме.
+
+#### Что произойдет при сбое хука:
+
+    1. INFO | Выполняем хук: bad_hook (доступно 5.00s)
+    2. ... | Необработанная ошибка в хуке bad_hook. Продолжаем.
+    3. ERROR | Graceful shutdown завершен с ошибками (см. логи выше).
+    4. →  Оставшиеся хуки всё равно выполнятся, процесс выйдет с кодом 1.
 
 ## 📖 Real-World Example: FastAPI Integration
 
@@ -136,10 +152,23 @@ if __name__ == "__main__":
     * Логирует ошибку.
     * Продолжает выполнение следующих хуков.
     * Никогда не прерывает весь процесс очистки из-за одной ошибки.
+    * Помечает shutdown как неуспешный: `manager.exit_code` после завершения
+      будет равен 1, чтобы оркестратор (Kubernetes, systemd) получил сигнал
+      о проблеме вместо "тихого" кода 0.
+
+1. Idempotency & Clean Exit (Идемпотентность и чистое завершение)
+
+    Повторный сигнал или повторный вызов выполнения хуков не запускает
+    их заново. После завершения хуков менеджер корректно отменяет главную
+    задачу приложения, поэтому `asyncio.run(main())` возвращается штатно —
+    без `Task exception was never retrieved` в логах — и код выхода можно
+    прочитать через `manager.exit_code`.
 
 1. Automatic Process Termination (Автоматическое завершение процесса)
 
-    
+    Процесс завершается сам: достаточно вернуть `manager` из `main()` и
+    вызвать `sys.exit(manager.exit_code)`.
+
 1. OS Signal Handling (Обработка сигналов ОС)
 
     Менеджер подписывается на:
@@ -202,7 +231,7 @@ uv build
     ├── tests/
     │   └── test_shutdown.py    # Тесты для ShutdownManager
     └── examples/
-    └── fastapi_graceful_shutdown.py  # Пример интеграции с FastAPI
+        └── fastapi_graceful_shutdown.py  # Пример интеграции с FastAPI
 
 ## 🤝 Contributing / Участие в разработке
 
@@ -227,4 +256,5 @@ MIT License. Свободно используйте в коммерческих
 Спасибо сообществу Python за потрясающие инструменты: asyncio, contextvars, uv, ruff, mypy.
 
 **RU:** Если у вас есть вопросы или предложения, открывайте Issue или пишите в обсуждения.
+
 **EN:** If you have any questions or suggestions, feel free to open an Issue or start a Discussion.
